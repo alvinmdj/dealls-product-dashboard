@@ -1,11 +1,13 @@
 import Layout from '@/components/layout';
 
-export default function HomePage() {
+const ProductListPage = () => {
   return (
     <Layout>
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
-        Hi, admin.
+        Product List Page
       </h1>
     </Layout>
   );
-}
+};
+
+export default ProductListPage;
