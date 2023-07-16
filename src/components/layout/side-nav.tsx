@@ -5,6 +5,10 @@ import { useRouter } from 'next/router';
 
 export const navItems = [
   {
+    name: 'Home',
+    href: '/',
+  },
+  {
     name: 'Products',
     href: '/products',
   },
