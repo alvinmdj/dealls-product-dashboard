@@ -4,5 +4,8 @@
   "editor.codeActionsOnSave": {
     "source.fixAll": true, // Fix all eslint errors on save
     "source.organizeImports": true // Organize imports on save
-  }
+  },
+  "tailwindCSS.experimental.classRegex": [
+    ["cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"]
+  ]
 }
