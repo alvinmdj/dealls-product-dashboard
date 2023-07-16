@@ -25,9 +25,14 @@ const MainNav = () => {
         <SheetTrigger>
           <Menu />
         </SheetTrigger>
-        <SheetContent side="left">
+        <SheetContent
+          side="left"
+          className="bg-primary text-primary-foreground"
+        >
           <SheetHeader>
-            <SheetTitle>Admin Dashboard</SheetTitle>
+            <SheetTitle className="text-primary-foreground">
+              Admin Dashboard
+            </SheetTitle>
             <SheetDescription className="flex flex-col gap-2">
               {navItems.map((item) => (
                 <Link
