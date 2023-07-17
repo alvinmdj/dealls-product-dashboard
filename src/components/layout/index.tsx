@@ -1,6 +1,6 @@
+import MainNav from '@/components/layout/main-nav';
+import SideNav from '@/components/layout/side-nav';
 import { ReactNode } from 'react';
-import MainNav from './main-nav';
-import SideNav from './side-nav';
 
 type LayoutProps = {
   children: ReactNode;
