@@ -8,14 +8,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { LIMIT, fetchProductList } from '@/configs/api/product';
+import { fetchProductList } from '@/configs/api/product';
 import { TProductList } from '@/configs/types/product';
 import { useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 import { Input } from '../ui/input';
 
 const productTableHeads = [
-  '#',
   'Product Name',
   'Brand',
   'Price',
@@ -24,23 +23,31 @@ const productTableHeads = [
 ];
 
 const ProductTable = () => {
-  const [skip, setSkip] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const productList = useQuery<TProductList, Error>({
-    queryKey: ['todos', skip],
-    queryFn: () => fetchProductList(skip),
-    keepPreviousData: true,
+    queryKey: ['todos'],
+    queryFn: fetchProductList,
   });
 
+  // handle pagination data
+  const productsPerPage = 4;
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = productList.data?.products.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
   function handlePagination(type: 'prev' | 'next') {
-    if (type === 'prev' && skip > 0) {
-      setSkip(skip - LIMIT);
+    if (type === 'prev' && currentPage > 1) {
+      setCurrentPage(currentPage - 1);
     } else if (
       type === 'next' &&
       productList.data &&
-      skip + LIMIT !== productList.data.total
+      currentPage !== productList.data.total / productsPerPage
     ) {
-      setSkip(skip + LIMIT);
+      setCurrentPage(currentPage + 1);
     }
   }
 
@@ -79,9 +86,8 @@ const ProductTable = () => {
                 </TableCell>
               </TableRow>
             )}
-            {productList.data?.products.map((product) => (
+            {currentProducts?.map((product) => (
               <TableRow key={product.id}>
-                <TableCell>{product.id}</TableCell>
                 <TableCell>{product.title}</TableCell>
                 <TableCell>{product.brand}</TableCell>
                 <TableCell>{product.price}</TableCell>
@@ -98,22 +104,18 @@ const ProductTable = () => {
             variant="outline"
             size="sm"
             onClick={() => handlePagination('prev')}
-            disabled={skip === 0}
+            disabled={currentPage === 1}
           >
             Previous
           </Button>
           <p className="text-sm">
-            Page {(productList.data.skip + LIMIT) / LIMIT} /{' '}
-            {productList.data.total / LIMIT}
+            Page {currentPage} / {productList.data.total / productsPerPage}
           </p>
           <Button
             variant="outline"
             size="sm"
             onClick={() => handlePagination('next')}
-            disabled={
-              productList.data.skip + productList.data.limit ===
-              productList.data.total
-            }
+            disabled={currentPage === productList.data.total / productsPerPage}
           >
             Next
           </Button>
