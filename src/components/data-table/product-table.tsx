@@ -1,11 +1,5 @@
 import Pagination from '@/components/data-table/pagination';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import {
   Table,
   TableBody,
@@ -18,10 +12,10 @@ import {
 import { fetchAllCategories, fetchProductList } from '@/configs/api/product';
 import { TProduct, TProductList } from '@/configs/types/product';
 import { useQuery } from '@tanstack/react-query';
-import { ChevronDown } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { Checkbox } from '../ui/checkbox';
 import { Label } from '../ui/label';
+import Dropdown from './dropdown';
 
 const productTableHeads = [
   'Product Name',
@@ -117,29 +111,22 @@ const ProductTable = () => {
           onChange={(e) => handleSearchByProductName(e.target.value)}
           className="max-w-sm"
         />
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline">
-              Categories <ChevronDown className="ml-2 h-5 w-5" />
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="max-h-96 overflow-auto">
-            <div className="flex flex-col gap-2">
-              <p className="text-sm">Filter by categories</p>
-              {!!productCategories.data &&
-                productCategories.data.map((cat) => (
-                  <div key={cat} className="flex items-center space-x-2">
-                    <Checkbox
-                      id={cat}
-                      checked={selectedCategories.includes(cat)}
-                      onCheckedChange={() => handleCategoryFilter(cat)}
-                    />
-                    <Label htmlFor={cat}>{cat}</Label>
-                  </div>
-                ))}
-            </div>
-          </PopoverContent>
-        </Popover>
+        <Dropdown title="Categories">
+          <div className="flex flex-col gap-2">
+            <p className="text-sm">Filter by categories</p>
+            {!!productCategories.data &&
+              productCategories.data.map((cat) => (
+                <div key={cat} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={cat}
+                    checked={selectedCategories.includes(cat)}
+                    onCheckedChange={() => handleCategoryFilter(cat)}
+                  />
+                  <Label htmlFor={cat}>{cat}</Label>
+                </div>
+              ))}
+          </div>
+        </Dropdown>
       </div>
       <div className="rounded-md border mt-4">
         <Table>
@@ -166,7 +153,7 @@ const ProductTable = () => {
                 </TableCell>
               </TableRow>
             )}
-            {!!currentProducts.length ? (
+            {!!currentProducts.length &&
               currentProducts.map((product) => (
                 <TableRow key={product.id}>
                   <TableCell>{product.title}</TableCell>
@@ -175,8 +162,8 @@ const ProductTable = () => {
                   <TableCell>{product.stock}</TableCell>
                   <TableCell>{product.category}</TableCell>
                 </TableRow>
-              ))
-            ) : (
+              ))}
+            {productList.data && !currentProducts.length && (
               <TableRow>
                 <TableCell colSpan={6} className="text-center">
                   Product not found
