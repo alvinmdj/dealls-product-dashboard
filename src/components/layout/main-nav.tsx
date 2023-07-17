@@ -17,7 +17,7 @@ const MainNav = () => {
   const router = useRouter();
 
   return (
-    <nav className="block md:hidden p-4 pb-3 bg-primary text-primary-foreground">
+    <nav className="block md:hidden p-4 pb-3 bg-primary text-primary-foreground sticky top-0">
       <Sheet>
         <SheetTrigger>
           <Menu />
