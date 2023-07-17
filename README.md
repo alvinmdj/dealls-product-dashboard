@@ -4,6 +4,7 @@
 
 - [dummy JSON](https://dummyjson.com/)
 - [shadcn/ui](https://ui.shadcn.com/)
+- [Tanstack react query](https://tanstack.com/query/v4/docs/react/overview)
 
 ## Getting Started
 
