@@ -10,6 +10,6 @@ export async function fetchProductList() {
 
 export async function fetchAllCategories() {
   const response = await fetch(`${API_ROOT}/products/categories`);
-  const data = response.json();
+  const data = await response.json();
   return data;
 }
