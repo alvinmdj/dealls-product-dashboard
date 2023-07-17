@@ -9,9 +9,9 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { fetchProductList } from '@/configs/api/product';
-import { TProductList } from '@/configs/types/product';
+import { TProduct, TProductList } from '@/configs/types/product';
 import { useQuery } from '@tanstack/react-query';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Input } from '../ui/input';
 
 const productTableHeads = [
@@ -24,20 +24,13 @@ const productTableHeads = [
 
 const ProductTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [filteredProducts, setFilteredProducts] = useState<TProduct[]>([]);
 
   const productList = useQuery<TProductList, Error>({
     queryKey: ['todos'],
     queryFn: fetchProductList,
   });
-
-  // handle pagination data
-  const productsPerPage = 4;
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = productList.data?.products.slice(
-    indexOfFirstProduct,
-    indexOfLastProduct
-  );
 
   function handlePagination(type: 'prev' | 'next') {
     if (type === 'prev' && currentPage > 1) {
@@ -51,13 +44,48 @@ const ProductTable = () => {
     }
   }
 
+  const handleSearchByProductName = (keyword: string) => {
+    setSearchKeyword(keyword.toLowerCase());
+  };
+
+  const filterProducts = useCallback(
+    (searchKeyword: string) => {
+      const filtered =
+        productList.data?.products.filter((product) =>
+          product.title.toLowerCase().includes(searchKeyword)
+        ) || [];
+      setFilteredProducts(filtered);
+      setCurrentPage(1);
+    },
+    [productList.data?.products]
+  );
+
+  const productsPerPage = 4;
+  const totalPage = Math.ceil(filteredProducts.length / productsPerPage);
+  const indexOfLastProduct = currentPage * productsPerPage;
+  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
+  const currentProducts = filteredProducts.slice(
+    indexOfFirstProduct,
+    indexOfLastProduct
+  );
+
+  useEffect(() => {
+    const debounce = setTimeout(() => {
+      filterProducts(searchKeyword);
+    }, 500);
+
+    return () => {
+      clearTimeout(debounce);
+    };
+  }, [filterProducts, searchKeyword]);
+
   return (
     <>
       <div className="flex pt-4">
         <Input
           placeholder="Search product name..."
-          // value={}
-          // onChange={}
+          value={searchKeyword}
+          onChange={(e) => handleSearchByProductName(e.target.value)}
           className="max-w-sm"
         />
       </div>
@@ -109,13 +137,13 @@ const ProductTable = () => {
             Previous
           </Button>
           <p className="text-sm">
-            Page {currentPage} / {productList.data.total / productsPerPage}
+            Page {currentPage} / {totalPage}
           </p>
           <Button
             variant="outline"
             size="sm"
             onClick={() => handlePagination('next')}
-            disabled={currentPage === productList.data.total / productsPerPage}
+            disabled={currentPage === totalPage}
           >
             Next
           </Button>
