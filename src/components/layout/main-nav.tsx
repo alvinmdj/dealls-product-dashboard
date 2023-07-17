@@ -1,4 +1,3 @@
-import { inter } from '@/components/layout';
 import { navItems } from '@/components/layout/side-nav';
 import { buttonVariants } from '@/components/ui/button';
 import {
@@ -18,9 +17,7 @@ const MainNav = () => {
   const router = useRouter();
 
   return (
-    <nav
-      className={`block md:hidden p-4 pb-3 bg-primary text-primary-foreground ${inter.className}`}
-    >
+    <nav className="block md:hidden p-4 pb-3 bg-primary text-primary-foreground">
       <Sheet>
         <SheetTrigger>
           <Menu />
