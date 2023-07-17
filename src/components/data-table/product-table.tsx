@@ -1,4 +1,5 @@
-import { Button } from '@/components/ui/button';
+import Pagination from '@/components/data-table/pagination';
+import { Input } from '@/components/ui/input';
 import {
   Table,
   TableBody,
@@ -12,7 +13,6 @@ import { fetchProductList } from '@/configs/api/product';
 import { TProduct, TProductList } from '@/configs/types/product';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
-import { Input } from '../ui/input';
 
 const productTableHeads = [
   'Product Name',
@@ -114,40 +114,32 @@ const ProductTable = () => {
                 </TableCell>
               </TableRow>
             )}
-            {currentProducts?.map((product) => (
-              <TableRow key={product.id}>
-                <TableCell>{product.title}</TableCell>
-                <TableCell>{product.brand}</TableCell>
-                <TableCell>{product.price}</TableCell>
-                <TableCell>{product.stock}</TableCell>
-                <TableCell>{product.category}</TableCell>
+            {!!currentProducts.length ? (
+              currentProducts.map((product) => (
+                <TableRow key={product.id}>
+                  <TableCell>{product.title}</TableCell>
+                  <TableCell>{product.brand}</TableCell>
+                  <TableCell>{product.price}</TableCell>
+                  <TableCell>{product.stock}</TableCell>
+                  <TableCell>{product.category}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center">
+                  Product not found
+                </TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </div>
       {!!productList.data && (
-        <div className="flex items-center justify-end space-x-2 py-4">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePagination('prev')}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
-          <p className="text-sm">
-            Page {currentPage} / {totalPage}
-          </p>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => handlePagination('next')}
-            disabled={currentPage === totalPage}
-          >
-            Next
-          </Button>
-        </div>
+        <Pagination
+          handlePagination={handlePagination}
+          currentPage={currentPage}
+          totalPage={totalPage}
+        />
       )}
     </>
   );
