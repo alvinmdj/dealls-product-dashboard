@@ -6,6 +6,13 @@
 - [shadcn/ui](https://ui.shadcn.com/)
 - [Tanstack react query](https://tanstack.com/query/v4/docs/react/overview)
 
+## Functionality
+
+- View the list products in the table form
+- Filter products based on the Brand & Price Range & Category
+- Search products based on Product Name
+- Autosave applied filters & search
+
 ## Getting Started
 
 First, run the development server:
