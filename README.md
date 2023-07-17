@@ -12,6 +12,7 @@
 - Filter products based on the Brand & Price Range & Category
 - Search products based on Product Name
 - Autosave applied filters & search
+- View a chart that shows the number of items per Product
 
 ## Getting Started
 

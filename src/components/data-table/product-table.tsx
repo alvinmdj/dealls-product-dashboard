@@ -12,9 +12,9 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { fetchAllCategories, fetchProductList } from '@/configs/api/product';
+import { fetchAllCategories } from '@/configs/api/product';
 import { TProduct, TProductList } from '@/configs/types/product';
-import { useQuery } from '@tanstack/react-query';
+import { UseQueryResult, useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import ReactSlider from 'react-slider';
 
@@ -26,18 +26,17 @@ const productTableHeads = [
   'Category',
 ];
 
-const ProductTable = () => {
+type ProductTableProps = {
+  productList: UseQueryResult<TProductList, Error>;
+};
+
+const ProductTable = ({ productList }: ProductTableProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [priceRange, setPriceRange] = useState([0, 2000]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<TProduct[]>([]);
-
-  const productList = useQuery<TProductList, Error>({
-    queryKey: ['productList'],
-    queryFn: fetchProductList,
-  });
 
   const productCategories = useQuery<string[], Error>({
     queryKey: ['productCategories'],
