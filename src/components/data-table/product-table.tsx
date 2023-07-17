@@ -57,6 +57,7 @@ const ProductTable = ({ productList }: ProductTableProps) => {
     ) {
       setCurrentPage(currentPage + 1);
     }
+    window.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
   }
 
   const handleSearchByProductName = (keyword: string) => {
@@ -105,6 +106,7 @@ const ProductTable = ({ productList }: ProductTableProps) => {
         ) || [];
       setFilteredProducts(filtered);
       setCurrentPage(1);
+      window.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
     },
     [productList.data?.products]
   );
