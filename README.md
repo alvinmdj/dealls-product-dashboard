@@ -6,6 +6,17 @@
 - [shadcn/ui](https://ui.shadcn.com/)
 - [Tanstack react query](https://tanstack.com/query/v4/docs/react/overview)
 
+## Tech Stacks
+
+- TypeScript
+- React
+- Next.js
+- React Query
+- Tailwind CSS
+- Radix UI with shadcn/ui
+- Chart.js with react-chartjs-2
+- React-slider
+
 ## Functionality
 
 - View the list products in the table form
@@ -13,6 +24,10 @@
 - Search products based on Product Name
 - Autosave applied filters & search
 - View a chart that shows the number of items per Product
+- View the list of carts that are available in a table form
+- View the details of a cart in a separate card detail
+- Show pagination in the products & carts table
+- Responsive layout
 
 ## Getting Started
 
