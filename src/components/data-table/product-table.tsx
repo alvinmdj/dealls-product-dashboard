@@ -1,5 +1,8 @@
+import Dropdown from '@/components/data-table/dropdown';
 import Pagination from '@/components/data-table/pagination';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Table,
   TableBody,
@@ -13,9 +16,7 @@ import { fetchAllCategories, fetchProductList } from '@/configs/api/product';
 import { TProduct, TProductList } from '@/configs/types/product';
 import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
-import { Checkbox } from '../ui/checkbox';
-import { Label } from '../ui/label';
-import Dropdown from './dropdown';
+import ReactSlider from 'react-slider';
 
 const productTableHeads = [
   'Product Name',
@@ -28,6 +29,7 @@ const productTableHeads = [
 const ProductTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [priceRange, setPriceRange] = useState([0, 2000]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<TProduct[]>([]);
@@ -87,13 +89,20 @@ const ProductTable = () => {
   };
 
   const filterProducts = useCallback(
-    (searchKeyword: string, categories: string[], brands: string[]) => {
+    (
+      searchKeyword: string,
+      categories: string[],
+      brands: string[],
+      priceRange: number[]
+    ) => {
       const filtered =
         productList.data?.products.filter(
           (product) =>
             product.title.toLowerCase().includes(searchKeyword) &&
             (!categories.length || categories.includes(product.category)) &&
-            (!brands.length || brands.includes(product.brand))
+            (!brands.length || brands.includes(product.brand)) &&
+            product.price >= priceRange[0] &&
+            product.price <= priceRange[1]
         ) || [];
       setFilteredProducts(filtered);
       setCurrentPage(1);
@@ -112,13 +121,24 @@ const ProductTable = () => {
 
   useEffect(() => {
     const debounce = setTimeout(() => {
-      filterProducts(searchKeyword, selectedCategories, selectedBrands);
+      filterProducts(
+        searchKeyword,
+        selectedCategories,
+        selectedBrands,
+        priceRange
+      );
     }, 500);
 
     return () => {
       clearTimeout(debounce);
     };
-  }, [filterProducts, searchKeyword, selectedCategories, selectedBrands]);
+  }, [
+    filterProducts,
+    searchKeyword,
+    selectedCategories,
+    selectedBrands,
+    priceRange,
+  ]);
 
   return (
     <>
@@ -159,6 +179,29 @@ const ProductTable = () => {
                   <Label htmlFor={brand}>{brand}</Label>
                 </div>
               ))}
+          </div>
+        </Dropdown>
+        <Dropdown title="Price Range">
+          <div className="flex flex-col">
+            <p className="text-sm">Filter by price range</p>
+            <div className="flex justify-between mt-2">
+              <p className="text-sm font-semibold">{priceRange[0]}</p>
+              <p className="text-sm font-semibold">{priceRange[1]}</p>
+            </div>
+            <ReactSlider
+              className="w-full h-8"
+              thumbClassName="h-6 w-6 leading-6 text-center bg-primary rounded-full cursor-grab mt-1"
+              trackClassName="h-1/4 top-1/2 -translate-y-1/2 rounded-full bg-gray-200"
+              value={priceRange}
+              onChange={(value) => setPriceRange(value)}
+              min={0}
+              max={2000}
+              step={10}
+              ariaLabel={['Lower thumb', 'Upper thumb']}
+              ariaValuetext={(state) => `Thumb value ${state.valueNow}`}
+              renderThumb={(props) => <div {...props} />}
+              pearling
+            />
           </div>
         </Dropdown>
       </div>

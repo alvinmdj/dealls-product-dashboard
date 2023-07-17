@@ -1,3 +1,4 @@
+import { Button } from '@/components/ui/button';
 import {
   Popover,
   PopoverContent,
@@ -5,7 +6,6 @@ import {
 } from '@/components/ui/popover';
 import { ChevronDown } from 'lucide-react';
 import { ReactNode } from 'react';
-import { Button } from '../ui/button';
 
 type DropdownProps = {
   title: string;
