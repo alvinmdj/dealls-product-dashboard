@@ -10,7 +10,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { fetchUserById } from '@/configs/api/user';
-import { TCartList } from '@/configs/types/cart';
+import { TCart, TCartList } from '@/configs/types/cart';
 import { UseQueryResult, useQuery } from '@tanstack/react-query';
 import { useState } from 'react';
 
@@ -60,19 +60,7 @@ const CartTable = ({ cartList }: CartTableProps) => {
       <h1 className="scroll-m-20 text-4xl font-extrabold tracking-tight lg:text-5xl">
         Cart #{currentCart?.id || 1}
       </h1>
-      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mt-4">
-        Details
-      </h3>
-      <Card>
-        {currentCart && (
-          <CardContent className="pt-6 grid sm:grid-cols-2 gap-4">
-            <p>User: {userFullName}</p>
-            <p># of items: {currentCart.totalProducts}</p>
-            <p>Total amount: {currentCart.total}</p>
-            <p>Discounted total amount: {currentCart.discountedTotal}</p>
-          </CardContent>
-        )}
-      </Card>
+      <CartDetailCard userFullName={userFullName} currentCart={currentCart} />
       <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mt-4">
         Products
       </h3>
@@ -135,3 +123,27 @@ const CartTable = ({ cartList }: CartTableProps) => {
 };
 
 export default CartTable;
+
+const CartDetailCard = ({
+  userFullName,
+  currentCart,
+}: {
+  userFullName: string;
+  currentCart: TCart | undefined;
+}) => (
+  <>
+    <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight mt-4">
+      Details
+    </h3>
+    <Card>
+      {currentCart && (
+        <CardContent className="pt-6 grid sm:grid-cols-2 gap-4">
+          <p>User: {userFullName}</p>
+          <p># of items: {currentCart.totalProducts}</p>
+          <p>Total amount: {currentCart.total}</p>
+          <p>Discounted total amount: {currentCart.discountedTotal}</p>
+        </CardContent>
+      )}
+    </Card>
+  </>
+);
