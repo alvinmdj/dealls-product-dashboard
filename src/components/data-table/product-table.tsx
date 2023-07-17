@@ -29,6 +29,7 @@ const ProductTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<TProduct[]>([]);
 
   const productList = useQuery<TProductList, Error>({
@@ -40,6 +41,10 @@ const ProductTable = () => {
     queryKey: ['productCategories'],
     queryFn: fetchAllCategories,
   });
+
+  const productBrands = Array.from(
+    new Set(productList.data?.products.map((product) => product.brand))
+  );
 
   function handlePagination(type: 'prev' | 'next') {
     if (type === 'prev' && currentPage > 1) {
@@ -69,13 +74,26 @@ const ProductTable = () => {
     });
   };
 
+  const handleBrandFilter = (brand: string) => {
+    setSelectedBrands((prevState) => {
+      const isChecked = prevState.includes(brand);
+
+      if (isChecked) {
+        return prevState.filter((b) => b !== brand);
+      } else {
+        return [...prevState, brand];
+      }
+    });
+  };
+
   const filterProducts = useCallback(
-    (searchKeyword: string, categories: string[]) => {
+    (searchKeyword: string, categories: string[], brands: string[]) => {
       const filtered =
         productList.data?.products.filter(
           (product) =>
             product.title.toLowerCase().includes(searchKeyword) &&
-            (!categories.length || categories.includes(product.category))
+            (!categories.length || categories.includes(product.category)) &&
+            (!brands.length || brands.includes(product.brand))
         ) || [];
       setFilteredProducts(filtered);
       setCurrentPage(1);
@@ -84,7 +102,7 @@ const ProductTable = () => {
   );
 
   const productsPerPage = 4;
-  const totalPage = Math.ceil(filteredProducts.length / productsPerPage);
+  const totalPage = Math.ceil(filteredProducts.length / productsPerPage) || 1;
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(
@@ -94,13 +112,13 @@ const ProductTable = () => {
 
   useEffect(() => {
     const debounce = setTimeout(() => {
-      filterProducts(searchKeyword, selectedCategories);
+      filterProducts(searchKeyword, selectedCategories, selectedBrands);
     }, 500);
 
     return () => {
       clearTimeout(debounce);
     };
-  }, [filterProducts, searchKeyword, selectedCategories]);
+  }, [filterProducts, searchKeyword, selectedCategories, selectedBrands]);
 
   return (
     <>
@@ -123,6 +141,22 @@ const ProductTable = () => {
                     onCheckedChange={() => handleCategoryFilter(cat)}
                   />
                   <Label htmlFor={cat}>{cat}</Label>
+                </div>
+              ))}
+          </div>
+        </Dropdown>
+        <Dropdown title="Brands">
+          <div className="flex flex-col gap-2">
+            <p className="text-sm">Filter by brands</p>
+            {!!productBrands &&
+              productBrands.map((brand) => (
+                <div key={brand} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={brand}
+                    checked={selectedBrands.includes(brand)}
+                    onCheckedChange={() => handleBrandFilter(brand)}
+                  />
+                  <Label htmlFor={brand}>{brand}</Label>
                 </div>
               ))}
           </div>
