@@ -15,7 +15,9 @@ const Layout = ({ children }: LayoutProps) => {
       <MainNav />
       <div className="flex gap-4">
         <SideNav />
-        <main className="flex-1 min-h-screen p-2">{children}</main>
+        <main className="flex-1 min-h-[calc(100vh-58.4px)] md:min-h-screen p-2 overflow-auto">
+          {children}
+        </main>
       </div>
     </div>
   );
