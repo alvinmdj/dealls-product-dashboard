@@ -1,4 +1,4 @@
-import { Button } from '@/components//ui/button';
+import { Button } from '@/components/ui/button';
 
 type PaginationProps = {
   handlePagination: (type: 'prev' | 'next') => void;
