@@ -7,3 +7,9 @@ export async function fetchProductList() {
   const data = await response.json();
   return data;
 }
+
+export async function fetchAllCategories() {
+  const response = await fetch(`${API_ROOT}/products/categories`);
+  const data = response.json();
+  return data;
+}

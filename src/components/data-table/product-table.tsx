@@ -1,5 +1,11 @@
 import Pagination from '@/components/data-table/pagination';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Table,
   TableBody,
@@ -9,10 +15,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { fetchProductList } from '@/configs/api/product';
+import { fetchAllCategories, fetchProductList } from '@/configs/api/product';
 import { TProduct, TProductList } from '@/configs/types/product';
 import { useQuery } from '@tanstack/react-query';
+import { ChevronDown } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { Checkbox } from '../ui/checkbox';
+import { Label } from '../ui/label';
 
 const productTableHeads = [
   'Product Name',
@@ -25,11 +34,17 @@ const productTableHeads = [
 const ProductTable = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchKeyword, setSearchKeyword] = useState('');
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<TProduct[]>([]);
 
   const productList = useQuery<TProductList, Error>({
-    queryKey: ['todos'],
+    queryKey: ['productList'],
     queryFn: fetchProductList,
+  });
+
+  const productCategories = useQuery<string[], Error>({
+    queryKey: ['productCategories'],
+    queryFn: fetchAllCategories,
   });
 
   function handlePagination(type: 'prev' | 'next') {
@@ -48,11 +63,25 @@ const ProductTable = () => {
     setSearchKeyword(keyword.toLowerCase());
   };
 
+  const handleCategoryFilter = (category: string) => {
+    setSelectedCategories((prevState) => {
+      const isChecked = prevState.includes(category);
+
+      if (isChecked) {
+        return prevState.filter((cat) => cat !== category);
+      } else {
+        return [...prevState, category];
+      }
+    });
+  };
+
   const filterProducts = useCallback(
-    (searchKeyword: string) => {
+    (searchKeyword: string, categories: string[]) => {
       const filtered =
-        productList.data?.products.filter((product) =>
-          product.title.toLowerCase().includes(searchKeyword)
+        productList.data?.products.filter(
+          (product) =>
+            product.title.toLowerCase().includes(searchKeyword) &&
+            (!categories.length || categories.includes(product.category))
         ) || [];
       setFilteredProducts(filtered);
       setCurrentPage(1);
@@ -71,23 +100,46 @@ const ProductTable = () => {
 
   useEffect(() => {
     const debounce = setTimeout(() => {
-      filterProducts(searchKeyword);
+      filterProducts(searchKeyword, selectedCategories);
     }, 500);
 
     return () => {
       clearTimeout(debounce);
     };
-  }, [filterProducts, searchKeyword]);
+  }, [filterProducts, searchKeyword, selectedCategories]);
 
   return (
     <>
-      <div className="flex pt-4">
+      <div className="flex flex-wrap gap-2 pt-4">
         <Input
           placeholder="Search product name..."
           value={searchKeyword}
           onChange={(e) => handleSearchByProductName(e.target.value)}
           className="max-w-sm"
         />
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline">
+              Categories <ChevronDown className="ml-2 h-5 w-5" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="max-h-96 overflow-auto">
+            <div className="flex flex-col gap-2">
+              <p className="text-sm">Filter by categories</p>
+              {!!productCategories.data &&
+                productCategories.data.map((cat) => (
+                  <div key={cat} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={cat}
+                      checked={selectedCategories.includes(cat)}
+                      onCheckedChange={() => handleCategoryFilter(cat)}
+                    />
+                    <Label htmlFor={cat}>{cat}</Label>
+                  </div>
+                ))}
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
       <div className="rounded-md border mt-4">
         <Table>
