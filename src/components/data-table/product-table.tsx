@@ -37,6 +37,7 @@ const ProductTable = ({ productList }: ProductTableProps) => {
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<TProduct[]>([]);
+  const [hasPerformedFilter, setHasPerformedFilter] = useState(false);
 
   const productCategories = useQuery<string[], Error>({
     queryKey: ['productCategories'],
@@ -105,6 +106,7 @@ const ProductTable = ({ productList }: ProductTableProps) => {
             product.price <= priceRange[1]
         ) || [];
       setFilteredProducts(filtered);
+      setHasPerformedFilter(true);
       setCurrentPage(1);
       window.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
     },
@@ -241,7 +243,7 @@ const ProductTable = ({ productList }: ProductTableProps) => {
                   <TableCell>{product.category}</TableCell>
                 </TableRow>
               ))}
-            {productList.data && !currentProducts.length && (
+            {hasPerformedFilter && !currentProducts.length && (
               <TableRow>
                 <TableCell colSpan={6} className="text-center">
                   Product not found
